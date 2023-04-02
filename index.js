@@ -28,5 +28,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+app.listen(process.env.PORT || 5000);
 
 module.exports = app;
