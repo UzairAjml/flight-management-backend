@@ -25,18 +25,34 @@ router.post("/search", async (req, res) => {
       return_offers: false,
     });
 
-    // retrieve the cheapest offer
+    res.send({
+      offer_id: offerRequestsResponse.data.id,
+    });
+  } catch (e) {
+    console.error(e);
+    if (e instanceof DuffelError) {
+      res.status(e.meta.status).send({ errors: e.errors });
+      return;
+    }
+    res.status(500).send(e);
+  }
+});
+router.get("/getOffers/:id", async (req, res) => {
+  if (!req.params["id"]) {
+    res.sendStatus(422);
+    return;
+  }
+  try {
     const offersResponse = await duffel.offers.list({
-      offer_request_id: offerRequestsResponse.data.id,
+      offer_request_id: req.params["id"],
       sort: "total_amount",
-      limit: 1,
+      limit: 10,
     });
 
     res.send({
       offer: offersResponse.data[0],
     });
   } catch (e) {
-    console.error(e);
     if (e instanceof DuffelError) {
       res.status(e.meta.status).send({ errors: e.errors });
       return;
