@@ -24,7 +24,7 @@ router.post("/search", async (req, res) => {
       cabin_class,
       return_offers: false,
     });
-
+    console.log("offerRequestsResponse",offerRequestsResponse)
     res.send({
       offer_id: offerRequestsResponse.data.id,
     });
@@ -51,6 +51,47 @@ router.get("/getOffers/:id", async (req, res) => {
 
     res.send({
       offer: offersResponse.data[0],
+    });
+  } catch (e) {
+    if (e instanceof DuffelError) {
+      res.status(e.meta.status).send({ errors: e.errors });
+      return;
+    }
+    res.status(500).send(e);
+  }
+});
+router.get("/getSeatPlan/:id", async (req, res) => {
+  if (!req.params["id"]) {
+    res.sendStatus(422);
+    return;
+  }
+  try {
+    const offersResponse = await duffel.seatMaps.get({
+      offer_id: req.params["id"],
+    });
+    console.log("offersResponse",offersResponse)
+    res.send({  
+      offer: offersResponse.data[0],
+    });
+  } catch (e) {
+    if (e instanceof DuffelError) {
+      res.status(e.meta.status).send({ errors: e.errors });
+      return;
+    }
+    res.status(500).send(e);
+  }
+});
+router.get("/searchPlace/:query", async (req, res) => {
+  if (!req.params["query"]) {
+    res.sendStatus(422);
+    return;
+  }
+  try {
+    const offersResponse = await duffel.suggestions.list({
+      query: req.params["query"],
+    });
+    res.send({  
+      offer: offersResponse,
     });
   } catch (e) {
     if (e instanceof DuffelError) {
