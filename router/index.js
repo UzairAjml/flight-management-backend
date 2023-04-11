@@ -85,7 +85,6 @@ router.get("/getSeatPlan/:id", async (req, res) => {
     const offersResponse = await duffel.seatMaps.get({
       offer_id: req.params["id"],
     });
-    console.log("offersResponse", offersResponse);
     res.send({
       offer: offersResponse.data[0],
     });
@@ -125,6 +124,28 @@ router.get("/searchPlace/:query", async (req, res) => {
   try {
     const offersResponse = await duffel.suggestions.list({
       query: req.params["query"],
+    });
+    res.send({
+      offer: offersResponse,
+    });
+  } catch (e) {
+    if (e instanceof DuffelError) {
+      res.status(e.meta.status).send({ errors: e.errors });
+      return;
+    }
+    res.status(500).send(e);
+  }
+});
+//create payment intent
+router.post("/paymentIntent", async (req, res) => {
+  const {
+    total_amount,
+    total_currency
+  } = req.body;
+  try {
+    const offersResponse = await duffel.paymentIntents.create({
+      currency:total_currency,
+      amount:total_amount,
     });
     res.send({
       offer: offersResponse,
