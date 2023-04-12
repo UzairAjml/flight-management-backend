@@ -138,15 +138,34 @@ router.get("/searchPlace/:query", async (req, res) => {
 });
 //create payment intent
 router.post("/paymentIntent", async (req, res) => {
-  const {
-    total_amount,
-    total_currency
-  } = req.body;
+  const { total_amount, total_currency } = req.body;
   try {
     const offersResponse = await duffel.paymentIntents.create({
-      currency:total_currency,
-      amount:total_amount,
+      currency: total_currency,
+      amount: total_amount,
     });
+    res.send({
+      offer: offersResponse,
+    });
+  } catch (e) {
+    if (e instanceof DuffelError) {
+      res.status(e.meta.status).send({ errors: e.errors });
+      return;
+    }
+    res.status(500).send(e);
+  }
+});
+
+//confirm payment
+router.get("/confirm-payment/:id", async (req, res) => {
+  if (!req.params["id"]) {
+    res.sendStatus(422);
+    return;
+  }
+  try {
+    const offersResponse = await duffel.paymentIntents.confirm(
+      req.params["id"]
+    );
     res.send({
       offer: offersResponse,
     });
