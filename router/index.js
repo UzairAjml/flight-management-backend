@@ -177,4 +177,23 @@ router.get("/confirm-payment/:id", async (req, res) => {
     res.status(500).send(e);
   }
 });
+
+//create order
+router.post("/create-order", async (req, res) => {
+  try {
+    const offersResponse = await duffel.orders.create({
+      ...req.body
+    });
+    res.send({
+      offer: offersResponse,
+    });
+  } catch (e) {
+    if (e instanceof DuffelError) {
+      res.status(e.meta.status).send({ errors: e.errors });
+      return;
+    }
+    res.status(500).send(e);
+  }
+});
+
 module.exports = router;
