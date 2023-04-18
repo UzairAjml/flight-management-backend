@@ -13,25 +13,42 @@ router.post("/search", async (req, res) => {
     return_date,
     passengers,
     return_offer,
+    rangeValues,
   } = req.body;
   if (!origin || !destination) {
     res.sendStatus(422);
     return;
   }
+  let slice;
   try {
     // create an offer request for a flight departing tomorrow
-    console.log("return_offer",return_offer)
-    const slice = return_offer
+     slice = return_offer
       ? [
           {
             origin,
             destination,
             departure_date,
+            // departure_time: {
+            //   to: `${rangeValues?.from_departure[1]}:00:00`,
+            //   from: `${rangeValues?.from_departure[0]}:00:00`,
+            // },
+            // arrival_time: {
+            //   to: `${rangeValues?.to_departure[1]}:00:00`,
+            //   from: `${rangeValues?.to_departure[1]}:00`,
+            // },
           },
           {
-            origin:destination,
-            destination:origin,
+            origin: destination,
+            destination: origin,
             departure_date: return_date,
+            // departure_time: {
+            //   to: `${rangeValues?.from_arrival[1]}:00:00`,
+            //   from: `${rangeValues?.from_arrival[0]}:00:00`,
+            // },
+            // arrival_time: {
+            //   to: `${rangeValues?.to_arrival[1]}:00:00`,
+            //   from: `${rangeValues?.to_arrival[1]}:00:00`,
+            // },
           },
         ]
       : [
@@ -39,6 +56,14 @@ router.post("/search", async (req, res) => {
             origin,
             destination,
             departure_date,
+            // departure_time: {
+            //   to: `${rangeValues?.from_departure[1]}:00`,
+            //   from: `${rangeValues?.from_departure[0]}:00`,
+            // },
+            // arrival_time: {
+            //   to: `${rangeValues?.to_departure[1]}:00`,
+            //   from: `${rangeValues?.to_departure[1]}:00`,
+            // },
           },
         ];
 
@@ -47,15 +72,15 @@ router.post("/search", async (req, res) => {
       passengers: [...passengers],
       cabin_class,
       // requestedSources:["duffel_airways"],
-      // return_offers: !return_offer,
+      return_offers:true,
     });
     res.send({
-      offer_id: offerRequestsResponse.data.id,
+      offer: offerRequestsResponse.data,
     });
   } catch (e) {
     console.error(e);
     if (e instanceof DuffelError) {
-      res.status(e.meta.status).send({ errors: e.errors });
+      res.status(e.meta.status).send({ errors: e.errors ,data:slice });
       return;
     }
     res.status(500).send(e);
