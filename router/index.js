@@ -20,28 +20,60 @@ router.post("/search", async (req, res) => {
   }
   try {
     // create an offer request for a flight departing tomorrow
+    console.log("return_offer",return_offer)
+    const slice = return_offer
+      ? [
+          {
+            origin,
+            destination,
+            departure_date,
+          },
+          {
+            origin:destination,
+            destination:origin,
+            departure_date: return_date,
+          },
+        ]
+      : [
+          {
+            origin,
+            destination,
+            departure_date,
+          },
+        ];
+
     const offerRequestsResponse = await duffel.offerRequests.create({
-      slices: [
-        {
-          origin,
-          destination,
-          departure_date,
-        },
-        {
-          destination,
-          origin,
-          departure_date: return_date,
-        },
-      ],
+      slices: [...slice],
       passengers: [...passengers],
       cabin_class,
-      return_offers: return_offer,
+      // requestedSources:["duffel_airways"],
+      // return_offers: !return_offer,
     });
     res.send({
       offer_id: offerRequestsResponse.data.id,
     });
   } catch (e) {
     console.error(e);
+    if (e instanceof DuffelError) {
+      res.status(e.meta.status).send({ errors: e.errors });
+      return;
+    }
+    res.status(500).send(e);
+  }
+});
+
+//List Airlines
+
+router.get("/getAirlines", async (req, res) => {
+  try {
+    const airlines = await duffel.airlines.list({
+      limit: 50,
+    });
+
+    res.send({
+      offer: airlines,
+    });
+  } catch (e) {
     if (e instanceof DuffelError) {
       res.status(e.meta.status).send({ errors: e.errors });
       return;
@@ -60,12 +92,12 @@ router.get("/getOffers/:id", async (req, res) => {
   try {
     const offersResponse = await duffel.offers.list({
       offer_request_id: req.params["id"],
-      sort: "total_amount",
-      limit: 10,
+      // sort: "total_amount",
+      // limit: 50,
     });
 
     res.send({
-      offer: offersResponse.data[0],
+      offer: offersResponse,
     });
   } catch (e) {
     if (e instanceof DuffelError) {
@@ -182,7 +214,7 @@ router.get("/confirm-payment/:id", async (req, res) => {
 router.post("/create-order", async (req, res) => {
   try {
     const offersResponse = await duffel.orders.create({
-      ...req.body
+      ...req.body,
     });
     res.send({
       offer: offersResponse,
