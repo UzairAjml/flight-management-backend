@@ -22,19 +22,51 @@ router.post("/search", async (req, res) => {
   let slice;
   try {
     // create an offer request for a flight departing tomorrow
-     slice = return_offer
+    slice = return_offer
       ? [
           {
             origin,
             destination,
             departure_date,
             // departure_time: {
-            //   to: `${rangeValues?.from_departure[1]}:00:00`,
-            //   from: `${rangeValues?.from_departure[0]}:00:00`,
+            //   to: `${
+            //     rangeValues?.from_departure[1] > 9
+            //       ? rangeValues?.from_departure[1]
+            //       : `0${
+            //           isNaN(rangeValues?.from_departure[1])
+            //             ? "0"
+            //             : rangeValues?.from_departure[1]
+            //         }`
+            //   }:00`,
+            //   from: `${
+            //     rangeValues?.from_departure[0] > 9
+            //       ? rangeValues?.from_departure[0]
+            //       : `0${
+            //           isNaN(rangeValues?.from_departure[0])
+            //             ? "0"
+            //             : rangeValues?.from_departure[0]
+            //         }`
+            //   }:00`,
             // },
             // arrival_time: {
-            //   to: `${rangeValues?.to_departure[1]}:00:00`,
-            //   from: `${rangeValues?.to_departure[1]}:00`,
+            //   to: `${
+            //     rangeValues?.to_departure[1] > 9
+            //       ? rangeValues?.to_departure[1]
+            //       : `0${
+            //           isNaN(rangeValues?.to_departure[1])
+            //             ? "0"
+            //             : rangeValues?.to_departure[1]
+            //         }`
+            //   }:00`,
+            //   from: `${
+            //     rangeValues?.to_departure[0] > 9
+            //       ? rangeValues?.to_departure[0]
+            //       : `0${
+            //           isNaN(rangeValues?.to_departure[0])
+            //             ? "0"
+            //             : rangeValues?.to_departure[0]
+            //         }`
+            //   }:00`,
             // },
           },
           {
@@ -42,12 +74,44 @@ router.post("/search", async (req, res) => {
             destination: origin,
             departure_date: return_date,
             // departure_time: {
-            //   to: `${rangeValues?.from_arrival[1]}:00:00`,
-            //   from: `${rangeValues?.from_arrival[0]}:00:00`,
+            //   to: `${
+            //     rangeValues?.from_arrival[1] > 9
+            //       ? rangeValues?.from_arrival[1]
+            //       : `0${
+            //           isNaN(rangeValues?.from_arrival[1])
+            //             ? "0"
+            //             : rangeValues?.from_arrival[1]
+            //         }`
+            //   }:00`,
+            //   from: `${
+            //     rangeValues?.from_arrival[0] > 9
+            //       ? rangeValues?.from_arrival[0]
+            //       : `0${
+            //           isNaN(rangeValues?.from_arrival[0])
+            //             ? "0"
+            //             : rangeValues?.from_arrival[0]
+            //         }`
+            //   }:00`,
             // },
             // arrival_time: {
-            //   to: `${rangeValues?.to_arrival[1]}:00:00`,
-            //   from: `${rangeValues?.to_arrival[1]}:00:00`,
+            //   to: `${
+            //     rangeValues?.to_arrival[1] > 9
+            //       ? rangeValues?.to_arrival[1]
+            //       : `0${
+            //           isNaN(rangeValues?.to_arrival[1])
+            //             ? "0"
+            //             : rangeValues?.to_arrival[1]
+            //         }`
+            //   }:00`,
+            //   from: `${
+            //     rangeValues?.to_arrival[0] > 9
+            //       ? rangeValues?.to_arrival[0]
+            //       : `0${
+            //           isNaN(rangeValues?.to_arrival[0])
+            //             ? "0"
+            //             : rangeValues?.to_arrival[0]
+            //         }`
+            //   }:00`,
             // },
           },
         ]
@@ -57,12 +121,44 @@ router.post("/search", async (req, res) => {
             destination,
             departure_date,
             // departure_time: {
-            //   to: `${rangeValues?.from_departure[1]}:00`,
-            //   from: `${rangeValues?.from_departure[0]}:00`,
+            //   to: `${
+            //     rangeValues?.from_departure[1] > 9
+            //       ? rangeValues?.from_departure[1]
+            //       : `0${
+            //           isNaN(rangeValues?.from_departure[1])
+            //             ? "0"
+            //             : rangeValues?.from_departure[1]
+            //         }`
+            //   }:00`,
+            //   from: `${
+            //     rangeValues?.from_departure[0] > 9
+            //       ? rangeValues?.from_departure[0]
+            //       : `0${
+            //           isNaN(rangeValues?.from_departure[0])
+            //             ? "0"
+            //             : rangeValues?.from_departure[0]
+            //         }`
+            //   }:00`,
             // },
             // arrival_time: {
-            //   to: `${rangeValues?.to_departure[1]}:00`,
-            //   from: `${rangeValues?.to_departure[1]}:00`,
+            //   to: `${
+            //     rangeValues?.to_departure[1] > 9
+            //       ? rangeValues?.to_departure[1]
+            //       : `0${
+            //           isNaN(rangeValues?.to_departure[1])
+            //             ? "0"
+            //             : rangeValues?.to_departure[1]
+            //         }`
+            //   }:00`,
+            //   from: `${
+            //     rangeValues?.to_departure[0] > 9
+            //       ? rangeValues?.to_departure[0]
+            //       : `0${
+            //           isNaN(rangeValues?.to_departure[0])
+            //             ? "0"
+            //             : rangeValues?.to_departure[0]
+            //         }`
+            //   }:00`,
             // },
           },
         ];
@@ -71,8 +167,9 @@ router.post("/search", async (req, res) => {
       slices: [...slice],
       passengers: [...passengers],
       cabin_class,
+      max_connections: 0,
       // requestedSources:["duffel_airways"],
-      return_offers:true,
+      return_offers: !return_offer,
     });
     res.send({
       offer: offerRequestsResponse.data,
@@ -80,7 +177,7 @@ router.post("/search", async (req, res) => {
   } catch (e) {
     console.error(e);
     if (e instanceof DuffelError) {
-      res.status(e.meta.status).send({ errors: e.errors ,data:slice });
+      res.status(e.meta.status).send({ errors: e.errors, data: slice });
       return;
     }
     res.status(500).send(e);
@@ -115,10 +212,13 @@ router.get("/getOffers/:id", async (req, res) => {
     return;
   }
   try {
+    console.log("query", req.query);
     const offersResponse = await duffel.offers.list({
       offer_request_id: req.params["id"],
-      // sort: "total_amount",
-      // limit: 50,
+      sort: "total_amount",
+      limit: 20,
+      after: req.query?.after,
+      before: req.query?.before,
     });
 
     res.send({
