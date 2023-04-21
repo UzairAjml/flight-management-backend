@@ -212,14 +212,27 @@ router.get("/getOffers/:id", async (req, res) => {
     return;
   }
   try {
-    console.log("query", req.query);
-    const offersResponse = await duffel.offers.list({
-      offer_request_id: req.params["id"],
-      sort: "total_amount",
-      limit: 20,
-      after: req.query?.after,
-      before: req.query?.before,
-    });
+    const payload = req.query?.after
+      ? {
+          offer_request_id: req.params["id"],
+          sort: "total_amount",
+          limit: 20,
+        }
+      : req.query?.before
+      ? {
+          offer_request_id: req.params["id"],
+          sort: "total_amount",
+          limit: 20,
+          before: req.query?.before,
+        }
+      : {
+          offer_request_id: req.params["id"],
+          sort: "total_amount",
+          limit: 20,
+          after: req.query?.after,
+        };
+        console.log("payload",payload)
+    const offersResponse = await duffel.offers.list(payload);
 
     res.send({
       offer: offersResponse,
