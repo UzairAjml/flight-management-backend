@@ -256,7 +256,7 @@ router.get("/getSeatPlan/:id", async (req, res) => {
       offer_id: req.params["id"],
     });
     res.send({
-      offer: offersResponse.data[0],
+      offer: offersResponse.data,
     });
   } catch (e) {
     if (e instanceof DuffelError) {
