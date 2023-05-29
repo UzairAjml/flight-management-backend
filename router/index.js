@@ -205,7 +205,6 @@ router.get("/getAirlines", async (req, res) => {
 });
 
 //List offer API
-
 router.get("/getOffers/:id", async (req, res) => {
   if (!req.params["id"]) {
     res.sendStatus(422);
