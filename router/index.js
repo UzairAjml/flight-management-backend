@@ -167,7 +167,7 @@ router.post("/search", async (req, res) => {
       slices: [...slice],
       passengers: [...passengers],
       cabin_class,
-      max_connections: 0,
+      max_connections: 2,
       // requestedSources:["duffel_airways"],
       return_offers: !return_offer,
     });
